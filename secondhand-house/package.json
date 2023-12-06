@@ -1,0 +1,28 @@
+{
+  "name": "secondhand-house",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.1.0",
+    "axios": "^1.6.2",
+    "echarts": "^5.4.3",
+    "element-plus": "^2.3.9",
+    "lib-flexible": "^0.3.2",
+    "nprogress": "^0.2.0",
+    "pinia": "^2.1.6",
+    "sass": "^1.66.1",
+    "scss": "^0.2.4",
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.2.3",
+    "vite": "^4.4.5"
+  }
+}
