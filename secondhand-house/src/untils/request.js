@@ -19,7 +19,7 @@ export const login = (data) => {
 //首页二手房表格数据渲染
 export const getHouseData = (num) => {
     return requests({
-        url: "/houseget/"+num,
+        url: "/house-get/" + num,
         method: "get"
     });
 };

@@ -26,7 +26,7 @@
       <span>
         <el-dropdown class="menu">
           <span>
-            {{ token ? userData.userInfo.username : "游客" }}
+            {{ token ? token : "游客" }}
             <el-icon>
               <arrow-down />
             </el-icon>

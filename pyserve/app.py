@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask, request, jsonify, make_response
 from flask_mongoengine import MongoEngine
 from models import User, House
@@ -75,7 +77,7 @@ def user_login():
                 'code': 200
             }))
             response.headers['Authorization'] = f'Bearer {user.username}'
-            response.access_control_expose_headers='Authorization'
+            response.access_control_expose_headers = 'Authorization'
             return response
         else:
             return jsonify({
@@ -90,11 +92,22 @@ def user_login():
 
 
 # 获取二手房数据
-@app.route('/api/houseget/<num>',methods=['GET'])
+@app.route('/api/house-get/<int:num>', methods=['GET'])
 def house_get(num):
     # 实时爬取房源
     spider_data = spider_house()
-    house = House(name = spider_data._name)
+    # print(spider_data)
+    # 逐个房源信息插入数据
+    for item in spider_data:
+        if House.objects(name=item._name,price=item._price).first():
+            print('已经爬取过了的房源')
+        else:
+            house = House(name=item._name, region=item._region,
+                          price=item._price, hostype=item._hostype,
+                          size=item._size, direction=item._direction,
+                          hosplay=item._hosplay, height=item._height,detail=item._detail)
+            house.save()
+            print('保存房源信息成功')
     houses = House.objects().limit(num)
     return jsonify({
         'houseData': houses,

@@ -15,19 +15,21 @@ requests.interceptors.request.use(config => {
     const token = localStorage.getItem('token')
     config.headers['Authorization'] = 'Bearer ' + token
     return config
-},error=>{
+}, error => {
     return Promise.reject(error)
 }
 )
 //响应拦截器
 requests.interceptors.response.use(response => {
-    console.log(response.headers)
-    const {authorization} = response.headers
-    const token = authorization.split(' ')[1]
-    authorization&&localStorage.setItem('token',token)
+    // console.log(response.headers)
+    const { authorization } = response.headers
+    if (authorization) {
+        const token = authorization.split(' ')[1]
+        authorization && localStorage.setItem('token', token)
+    }
     return response.data
 }, error => {
-    if(error.response && error.response.status === 401){
+    if (error.response && error.response.status === 401) {
         localStorage.removeItem('token')
         window.location.href = '/login'
     }
