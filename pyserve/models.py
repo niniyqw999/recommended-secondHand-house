@@ -23,7 +23,7 @@ class UserFeedback(me.Document):
 class User(me.Document):
     username = me.StringField(required=True)
     password = me.StringField(required=True)
-    liked_house = me.ListField()
+    liked_house = me.ListField(me.StringField())
 
 
 # 二手房信息表

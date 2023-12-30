@@ -23,3 +23,17 @@ export const getHouseData = (num) => {
         method: "get"
     });
 };
+//用户添加收藏
+export const addCollect = (id) => {
+    return requests({
+        url: "/house-like/" + id,
+        method: "get"
+    });
+};
+//用户个人中心收藏房源数据渲染
+export const getCollectData = () => {
+    return requests({
+        url: "/liked-get",
+        method: "get"
+    });
+};

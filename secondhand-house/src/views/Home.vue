@@ -65,7 +65,6 @@
     <el-table-column label="操作" align="center">
       <template #default="scope">
         <i
-          :class="scope.row.islike ? 'iconfont1 ' : ''"
           @click="addLike(scope.row)"
           class="iconfont icon-shoucang iconfont2"
         ></i>
@@ -79,7 +78,7 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import houseStore from "../store/house";
-import { getHouseData } from "../untils/request";
+import { getHouseData,addCollect } from "../untils/request";
 import { ElMessage } from "element-plus";
 
 //设置loading
@@ -194,9 +193,20 @@ const reset = () => {
 };
 //点击收藏的图标的回调
 const addLike = (row) => {
-  //改变仓库内是否收藏的状态
-  house.changeLike(row.name);
-  console.log(row.islike);
+  //传入房源id
+  addCollect(row._id.$oid).then(res =>{
+    if(res.code === 200){
+      ElMessage({
+        message: res.message,
+        type: "success"
+      })
+    }else{
+      ElMessage({
+        message: res.message,
+        type: "warning"
+      })
+    }
+  });
 };
 </script>
 

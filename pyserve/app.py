@@ -99,18 +99,58 @@ def house_get(num):
     # print(spider_data)
     # 逐个房源信息插入数据
     for item in spider_data:
-        if House.objects(name=item._name,price=item._price).first():
+        if House.objects(name=item._name, price=item._price).first():
             print('已经爬取过了的房源')
         else:
             house = House(name=item._name, region=item._region,
                           price=item._price, hostype=item._hostype,
                           size=item._size, direction=item._direction,
-                          hosplay=item._hosplay, height=item._height,detail=item._detail)
+                          hosplay=item._hosplay, height=item._height, detail=item._detail)
             house.save()
             print('保存房源信息成功')
     houses = House.objects().limit(num)
     return jsonify({
         'houseData': houses,
+        'code': 200
+    })
+
+
+# 二手房房源添加收藏
+@app.route('/api/house-like/<hosid>', methods=['GET'])
+def house_like(hosid):
+    token = request.headers.get('Authorization').split(' ')[1]
+    mylike = User.objects(username=token).first()
+    # 判断id是否已经存在
+    # 存在即移出
+    if hosid in mylike.liked_house:
+        mylike.liked_house.remove(hosid)
+        mylike.save()
+        return jsonify({
+            'message': '取消收藏成功',
+            'code': 204
+        })
+    # 不存在则添加收藏
+    else:
+        mylike.liked_house.append(hosid)
+        mylike.save()
+        return jsonify({
+            'message': '添加收藏成功',
+            'code': 200
+        })
+
+
+#  获取用户收藏的二手房数据
+@app.route('/api/liked-get', methods=['GET'])
+def liked_get():
+    liked_data = []  # 存储收藏的房源数据
+    token = request.headers.get('Authorization').split(' ')[1]  # 获取请求的token
+    mylike = User.objects(username=token).first()  # 通过token找寻相应用户收藏的房源id集合
+    #  遍历所有id获取房源具体信息
+    for value in mylike.liked_house:
+        house = House.objects(id=value).first()
+        liked_data.append(house)  # 插入获取的房源数据
+    return jsonify({
+        'houseData': liked_data,
         'code': 200
     })
 
