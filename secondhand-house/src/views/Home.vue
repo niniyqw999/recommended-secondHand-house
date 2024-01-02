@@ -65,8 +65,8 @@
     <el-table-column label="操作" align="center">
       <template #default="scope">
         <i
+          :class="house.searchData.includes(scope.row._id.$oid) ? 'iconfont icon-shoucang iconfont2 iconfont1' : 'iconfont icon-shoucang iconfont2'"
           @click="addLike(scope.row)"
-          class="iconfont icon-shoucang iconfont2"
         ></i>
         <a :href="scope.row.detail" target="_blank">查看详情</a>
       </template>
@@ -78,9 +78,10 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import houseStore from "../store/house";
-import { getHouseData,addCollect } from "../untils/request";
+import { getHouseData,getCollectId,addCollect,searchHouse } from "../untils/request";
 import { ElMessage } from "element-plus";
 
+const house = houseStore();
 //设置loading
 const loading = ref(true);
 const svg = `
@@ -93,8 +94,6 @@ const svg = `
           L 15 15
         " style="stroke-width: 4px; fill: rgba(0, 0, 0, 0)"/>
       `;
-//引用pinia库的数据
-const house = houseStore();
 //存储地区数据
 let regionOptions = ref([]);
 //存储朝向数据
@@ -116,7 +115,18 @@ let tableLength = ref(10);
 onMounted(() => {
   //请求表格数据
   getTableData();
+  //获取已经收藏过的房源id
+  renderCollectIcon();
 });
+//定义渲染房源收藏图标渲染的方法
+const renderCollectIcon = () => {
+  getCollectId().then((res) => {
+    if (res.code == 200) {
+      //pinia存储
+      house.searchData = res.data;
+    }
+  });
+};
 //定义获取表格数据方法
 const getTableData = () => {
   getHouseData(tableLength.value).then((res) => {
@@ -175,9 +185,22 @@ const getHostype = () => {
   hostypeOptions.value = [...new Set(hostypes)];
 };
 //按下查询按钮的回调
-const searchData = (form) => {
-  house.search(form);
-  tableData.value = house.searchData;
+const searchData = () => {
+  searchHouse(houseInfo).then((res) => {
+    if (res.code === 200) {
+      ElMessage({
+        message: "搜索成功",
+        type: "success",
+      });
+      tableData.value = res.houseData;
+}else{
+  ElMessage({
+        message: res.message,
+        type: "warning",
+      });
+}
+}
+  );
 };
 
 //按下重置按钮的回调
@@ -200,11 +223,13 @@ const addLike = (row) => {
         message: res.message,
         type: "success"
       })
+      renderCollectIcon()
     }else{
       ElMessage({
         message: res.message,
         type: "warning"
       })
+      renderCollectIcon()
     }
   });
 };

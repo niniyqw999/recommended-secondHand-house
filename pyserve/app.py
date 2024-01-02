@@ -139,6 +139,17 @@ def house_like(hosid):
         })
 
 
+# 获取用户收藏的二手房id
+@app.route('/api/liked-get-id', methods=['GET'])
+def liked_get_id():
+    token = request.headers.get('Authorization').split(' ')[1]  # 获取请求的token
+    mylike = User.objects(username=token).first()  # 通过token找寻相应用户收藏的房源id集合
+    return jsonify({
+        'data': mylike.liked_house,
+        'code': 200
+    })
+
+
 #  获取用户收藏的二手房数据
 @app.route('/api/liked-get', methods=['GET'])
 def liked_get():
@@ -153,6 +164,35 @@ def liked_get():
         'houseData': liked_data,
         'code': 200
     })
+
+
+# 搜索相关二手房数据
+@app.route('/api/house-search', methods=['POST'])
+def house_search():
+    data = request.json  # 获取前端发送的数据
+    # 定义查询条件
+    query = {}
+    # 添加条件
+    if data.get('name'):
+        query['name'] = data.get('name')
+    if data.get('region'):
+        query['region'] = data.get('region')
+    if data.get('direction'):
+        query['direction'] = data.get('direction')
+    if data.get('hostype'):
+        query['hostype'] = data.get('hostype')
+    # 查询符合条件的数据
+    house = House.objects(__raw__=query)
+    if house:
+        return jsonify({
+            'houseData': house,
+            'code': 200
+        })
+    else:
+        return jsonify({
+            'message': '没有相关房源信息',
+            'code': 204
+        })
 
 
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)  # 设置所有接口都允许被跨域访问

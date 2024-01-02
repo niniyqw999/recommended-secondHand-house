@@ -18,7 +18,7 @@
       <template #default="scope">
         <i
           @click="addLike(scope.row)"
-          class="iconfont icon-shoucang iconfont2"
+          :class="house.searchData.includes(scope.row._id.$oid) ? 'iconfont icon-shoucang iconfont2 iconfont1' : 'iconfont icon-shoucang iconfont2'"
         ></i>
         <a :href="scope.row.detail" target="_blank">查看详情</a>
       </template>
@@ -28,19 +28,32 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { getCollectData } from "../untils/request";
+import { getCollectData,getCollectId,addCollect } from "../untils/request";
+import houseStore from "../store/house";
+import { ElMessage } from "element-plus";
 
+const house = houseStore();
 //存储收藏的数据
 let likeData = ref([]);
 //挂载请求房源数据
 onMounted(() => {
   //请求表格数据
   getlikeData();
+  renderCollectIcon();
 });
 //定义获取表格数据方法
 const getlikeData = () => {
   getCollectData().then((res) => {
     likeData.value = res.houseData;
+  });
+};
+//定义渲染房源收藏图标渲染的方法
+const renderCollectIcon = () => {
+  getCollectId().then((res) => {
+    if (res.code == 200) {
+      //pinia存储
+      house.searchData = res.data;
+    }
   });
 };
 //点击收藏的图标的回调
@@ -52,11 +65,13 @@ const addLike = (row) => {
         message: res.message,
         type: "success",
       });
+      renderCollectIcon();
     } else {
       ElMessage({
         message: res.message,
         type: "warning",
       });
+      renderCollectIcon();
     }
   });
 };

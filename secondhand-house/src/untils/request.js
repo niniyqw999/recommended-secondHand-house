@@ -30,10 +30,32 @@ export const addCollect = (id) => {
         method: "get"
     });
 };
+//获取用户收藏的房源id数组
+export const getCollectId = () => {
+    return requests({
+        url: "/liked-get-id",
+        method: "get"
+    });
+};
+//用户取消收藏
+export const deleteCollect = (id) => {
+    return requests({
+        url: "/house-unlike/" + id,
+        method: "get"
+    });
+};
 //用户个人中心收藏房源数据渲染
 export const getCollectData = () => {
     return requests({
         url: "/liked-get",
         method: "get"
+    });
+};
+//搜索相关房源信息
+export const searchHouse = (data) => {
+    return requests({
+        url: "/house-search",
+        method: "post",
+        data
     });
 };
