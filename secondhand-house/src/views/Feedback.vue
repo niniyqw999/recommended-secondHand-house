@@ -53,6 +53,7 @@
 <script setup>
 import { ElMessage } from "element-plus";
 import { ref, reactive } from "vue";
+import { feedback } from "../untils/request";
 //定义表单实例
 let feedbackForm = ref();
 //定义存储用户反馈内容
@@ -74,12 +75,15 @@ const rules = reactive({
 const submit = (feedbackForm) => {
   feedbackForm.validate((valid) => {
     if (valid) {
-      ElMessage({
-        message: "提交成功",
-        type: "success",
+      feedback(feedbacks).then((res) => {
+        if (res.code == 200) {
+          ElMessage.success(res.message);
+          reset(feedbackForm);
+        } else {
+          ElMessage.error("提交失败");
+        }
       });
-      console.log("提交成功");
-      console.log(feedbacks);
+      reset(feedbackForm);
     } else {
       console.log("提交失败");
     }
@@ -92,18 +96,18 @@ const reset = (feedbackForm) => {
 </script>
     
 <style lang="scss" scoped>
-span{
-    font-size: 16px;
-    position: absolute;
-    left: 46%;
-    top: 20%;
+span {
+  font-size: 16px;
+  position: absolute;
+  left: 46%;
+  top: 20%;
 }
-.card{
-    width: 500px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0 auto;
-    margin-top: 10%;
+.card {
+  width: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  margin-top: 10%;
 }
 </style>

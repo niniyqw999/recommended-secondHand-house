@@ -51,7 +51,7 @@ export const getCollectData = () => {
         method: "get"
     });
 };
-//搜索相关房源信息
+//搜索相关房源信息并保存用户搜索偏好
 export const searchHouse = (data) => {
     return requests({
         url: "/house-search",
@@ -59,3 +59,19 @@ export const searchHouse = (data) => {
         data
     });
 };
+//用户反馈信息提交
+export const feedback = (data) => {
+    return requests({
+        url: "/feedback",
+        method: "post",
+        data
+    });
+};
+//房源轨迹分布获取
+export const getHouseTrack = () => {
+    return requests({
+        url: "/house-track",
+        method: "get"
+    }
+    );
+}

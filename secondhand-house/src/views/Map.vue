@@ -8,16 +8,19 @@
 import { onMounted, ref } from 'vue';
 import * as echarts from 'echarts';
 import 'echarts/extension/bmap/bmap';
+import { getHouseTrack } from '../untils/request';
+import { ElMessage } from 'element-plus';
 
 //获取dom元素
 const mymap = ref()
 //存储热力图数据
-let points = [
-    [114.29857211111, 30.5843651561,1],
-    [114.29857215465, 30.5843553156,1],
-    [114.29857216521, 30.58435511954,1],
-    [114.298572122651, 30.5843551154,1],
-];
+// let points = [
+//     [114.29857211111, 30.5843651561,1],
+//     [114.29857215465, 30.5843553156,1],
+//     [114.29857216521, 30.58435511954,1],
+//     [114.298572122651, 30.5843551154,1],
+// ];
+let points = []
 //定义图表配置项
 let option = {
     width: '100%',
@@ -53,6 +56,16 @@ let option = {
 onMounted(() => {
     //获取图表信息
     getChart()
+    //获取轨迹信息
+    getHouseTrack().then(res =>{
+        if (res.code == 200) {
+            points.value = res.tracksData
+            console.log(res.tracksData)
+            ElMessage.success('轨迹爬取成功')
+        }else{
+            ElMessage.error('轨迹爬取失败')
+        }
+    })
 })
 //获取图标信息的回调
 const getChart = () => {

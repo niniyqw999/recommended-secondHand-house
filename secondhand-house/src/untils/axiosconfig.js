@@ -3,7 +3,7 @@ import axios from 'axios'
 //创建axios实例
 const requests = axios.create({
     baseURL: 'http://127.0.0.1:5000/api',
-    timeout: 5000,
+    timeout: 666666,
     headers: {
         'Content-Type': 'application/json',
     },

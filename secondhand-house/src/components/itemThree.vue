@@ -5,50 +5,64 @@
 </template>
   
 <script setup>
-import { onMounted, ref } from 'vue';
-import * as echarts from 'echarts';
+import { onMounted, ref } from "vue";
+import * as echarts from "echarts";
 
-let myEcharts = ref()
+let myEcharts = ref();
 let data = [
-  {value:0.15,name:'江夏区'},
-  {value:0.23,name:'汉口区'},
-  {value:0.25,name:'武昌区'},
-  {value:0.17,name:'南湖区'},
-  {value:0.20,name:'洪山区'},
-]
+  { value: 0.35, name: "精装" },
+  { value: 0.23, name: "简装" },
+  { value: 0.25, name: "毛胚" },
+  { value: 0.17, name: "其他" },
+];
 
 onMounted(() => {
-  let myChart = echarts.init(myEcharts.value)
+  let myChart = echarts.init(myEcharts.value);
   myChart.setOption({
-    legend: {
-      top: 'bottom'
-    },
     tooltip: {
-      show: true
+      trigger: "item",
+    },
+    legend: {
+      top: "5%",
+      left: "center",
     },
     title: {
-    text: '各区房源数量',
-    left: 'center'
-  },
+          text: "二手房源装修分布",
+        },
     series: [
       {
-        type: 'pie',
-        data: data,
-        radius: [10, 100],
-        center: ['50%', '45%'],
-        roseType: 'area',
+        name: "Access From",
+        type: "pie",
+        radius: ["40%", "70%"],
+        avoidLabelOverlap: false,
         itemStyle: {
-          borderRadius: 10
-        }
-      }
-    ]
-  })
-})
+          borderRadius: 10,
+          borderColor: "#fff",
+          borderWidth: 2,
+        },
+        label: {
+          show: false,
+          position: "center",
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: 40,
+            fontWeight: "bold",
+          },
+        },
+        labelLine: {
+          show: false,
+        },
+        data: data,
+      },
+    ],
+  });
+});
 </script>
   
 <style lang="scss" scoped>
 .chart {
   height: 4.5rem;
 }
-
 </style>

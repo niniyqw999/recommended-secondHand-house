@@ -2,9 +2,9 @@ import json
 
 from flask import Flask, request, jsonify, make_response
 from flask_mongoengine import MongoEngine
-from models import User, House
+from models import User, House, UserSelect, UserFeedback
 from flask_cors import CORS
-from spiders import spider_house
+from spiders import spider_house, spider_tracks
 
 # 使用Flask类创建一个app对象
 # __name__:代表当前app.py这个模块
@@ -170,6 +170,12 @@ def liked_get():
 @app.route('/api/house-search', methods=['POST'])
 def house_search():
     data = request.json  # 获取前端发送的数据
+    token = request.headers.get('Authorization').split(' ')[1]  # 获取请求的token
+    # 存储用户的搜索偏好
+    selected = UserSelect(username=token, name=data.get('name'), region=data.get('region'),
+                          direction=data.get('direction'), hostype=data.get('hostype'))
+    selected.save()
+    print('保存用户偏好成功')
     # 定义查询条件
     query = {}
     # 添加条件
@@ -193,6 +199,32 @@ def house_search():
             'message': '没有相关房源信息',
             'code': 204
         })
+
+
+# 用户反馈信息保存
+@app.route('/api/feedback', methods=['POST'])
+def feedback():
+    data = request.json  # 获取前端发送的数据
+    token = request.headers.get('Authorization').split(' ')[1]  # 获取请求的token
+    feedbacks = UserFeedback(username=token, uiScore=data.get('uiScore'), funScore=data.get('funScore'),
+                             totalScore=data.get('totalScore'), content=data.get('content'))
+    feedbacks.save()
+    print('用户反馈保存成功')
+    return jsonify({
+        'message': '反馈提交成功',
+        'code': 200
+    })
+
+
+# 房源轨迹获取
+@app.route('/api/house-track', methods=['GET'])
+def house_track():
+    # 实时爬取轨迹
+    spider_data = spider_tracks()
+    return jsonify({
+        'tracksData': spider_data,
+        'code': 200
+    })
 
 
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)  # 设置所有接口都允许被跨域访问

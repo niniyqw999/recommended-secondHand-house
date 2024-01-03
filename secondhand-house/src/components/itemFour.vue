@@ -9,11 +9,10 @@ import { onMounted, ref } from 'vue';
 import * as echarts from 'echarts';
 let myEcharts = ref()
 let data = [
-  {value:0.15,name:'江夏区'},
-  {value:0.23,name:'汉口区'},
-  {value:0.25,name:'武昌区'},
-  {value:0.17,name:'南湖区'},
-  {value:0.20,name:'洪山区'},
+  {value:0.15,name:'一室一厅'},
+  {value:0.33,name:'二室一厅'},
+  {value:0.35,name:'三室两厅'},
+  {value:0.17,name:'四室两厅'},
 ]
 
 onMounted(() => {
@@ -26,8 +25,7 @@ onMounted(() => {
       show: true
     },
     title: {
-    text: '各区在售房源前五排行',
-    left: 'center'
+    text: '二手房户型分布',
   },
     series: [
       {

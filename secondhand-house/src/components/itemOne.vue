@@ -23,7 +23,7 @@ onMounted(() => {
       containLabel: true
     },
     title: {
-    text: '全城小区房价排名',
+    text: '各区房价平均价',
   },
     xAxis: {
       type: "category",
