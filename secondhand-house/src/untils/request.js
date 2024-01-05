@@ -16,6 +16,13 @@ export const login = (data) => {
         data
     });
 };
+//爬虫启动数据准备
+export const getData = () => {
+    return requests({
+        url: "/get-data",
+        method: "get"
+    });
+};
 //首页二手房表格数据渲染
 export const getHouseData = (num) => {
     return requests({

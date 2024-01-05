@@ -65,7 +65,7 @@
     <el-table-column label="操作" align="center">
       <template #default="scope">
         <i
-          :class="house.searchData.includes(scope.row._id.$oid) ? 'iconfont icon-shoucang iconfont2 iconfont1' : 'iconfont icon-shoucang iconfont2'"
+          :class="house.likedData.includes(scope.row._id.$oid) ? 'iconfont icon-shoucang iconfont2 iconfont1' : 'iconfont icon-shoucang iconfont2'"
           @click="addLike(scope.row)"
         ></i>
         <a :href="scope.row.detail" target="_blank">查看详情</a>
@@ -78,7 +78,7 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import houseStore from "../store/house";
-import { getHouseData,getCollectId,addCollect,searchHouse } from "../untils/request";
+import { getData,getHouseData,getCollectId,addCollect,searchHouse } from "../untils/request";
 import { ElMessage } from "element-plus";
 
 const house = houseStore();
@@ -113,8 +113,7 @@ let tableData = ref([]);
 let tableLength = ref(10);
 //挂载请求房源数据
 onMounted(() => {
-  //请求表格数据
-  getTableData();
+  getDatas();
   //获取已经收藏过的房源id
   renderCollectIcon();
 });
@@ -123,13 +122,21 @@ const renderCollectIcon = () => {
   getCollectId().then((res) => {
     if (res.code == 200) {
       //pinia存储
-      house.searchData = res.data;
+      house.likedData = res.data;
     }
   });
 };
+//定义首次爬取并渲染表格的方法
+const getDatas = () => {
+  getData().then(res=>{
+    if(res.code=200){
+      getTableData();
+    }
+  })
+}
 //定义获取表格数据方法
 const getTableData = () => {
-  getHouseData(tableLength.value).then((res) => {
+      getHouseData(tableLength.value).then((res) => {
     // console.log(res)
     if (res.code == 200) {
       ElMessage({
@@ -138,13 +145,12 @@ const getTableData = () => {
         grouping: true,
       });
       tableData.value = res.houseData;
-      // console.log(tableData.value);
-      //请求地区数据
-      getRegion();
-      //请求朝向数据
-      getDeriction();
-      //请求户型数据
-      getHostype();
+      //存储地区数据
+      regionOptions.value = res.regionData;
+      //存储朝向数据
+      directionOptions.value = res.directionData;
+      //存储户型数据
+      hostypeOptions.value = res.hostypeData;
       //quire数据后关闭loading
       loading.value = false;
     } else {
@@ -154,36 +160,30 @@ const getTableData = () => {
       });
     }
   });
-};
+    };
 //定义表格下拉滚动获取数据的方法
 const loadData = () => {
   tableLength.value += 2;
   getTableData();
-  //请求地区数据
-  getRegion();
-  //请求朝向数据
-  getDeriction();
-  //请求户型数据
-  getHostype();
 };
-//定义获取地区数据方法
-const getRegion = () => {
-  // regionOptions.value = house.regionOptions;
-  let regions = tableData.value.map((item) => item.region);
-  regionOptions.value = [...new Set(regions)];
-};
-//定义获取朝向数据的方法
-const getDeriction = () => {
-  // directionOptions.value = house.directionOptions;
-  let directions = tableData.value.map((item) => item.direction);
-  directionOptions.value = [...new Set(directions)];
-};
-//定义获取户型数据的方法
-const getHostype = () => {
-  // hostypeOptions.value = house.hostypeOptions;
-  let hostypes = tableData.value.map((item) => item.hostype);
-  hostypeOptions.value = [...new Set(hostypes)];
-};
+// //定义获取地区数据方法
+// const getRegion = () => {
+//   // regionOptions.value = house.regionOptions;
+//   let regions = tableData.value.map((item) => item.region);
+//   regionOptions.value = [...new Set(regions)];
+// };
+// //定义获取朝向数据的方法
+// const getDeriction = () => {
+//   // directionOptions.value = house.directionOptions;
+//   let directions = tableData.value.map((item) => item.direction);
+//   directionOptions.value = [...new Set(directions)];
+// };
+// //定义获取户型数据的方法
+// const getHostype = () => {
+//   // hostypeOptions.value = house.hostypeOptions;
+//   let hostypes = tableData.value.map((item) => item.hostype);
+//   hostypeOptions.value = [...new Set(hostypes)];
+// };
 //按下查询按钮的回调
 const searchData = () => {
   searchHouse(houseInfo).then((res) => {

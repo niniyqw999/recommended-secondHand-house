@@ -18,7 +18,7 @@
       <template #default="scope">
         <i
           @click="addLike(scope.row)"
-          :class="house.searchData.includes(scope.row._id.$oid) ? 'iconfont icon-shoucang iconfont2 iconfont1' : 'iconfont icon-shoucang iconfont2'"
+          :class="house.likedData.includes(scope.row._id.$oid) ? 'iconfont icon-shoucang iconfont2 iconfont1' : 'iconfont icon-shoucang iconfont2'"
         ></i>
         <a :href="scope.row.detail" target="_blank">查看详情</a>
       </template>
@@ -52,7 +52,7 @@ const renderCollectIcon = () => {
   getCollectId().then((res) => {
     if (res.code == 200) {
       //pinia存储
-      house.searchData = res.data;
+      house.likedData = res.data;
     }
   });
 };

@@ -91,15 +91,18 @@ def user_login():
         })
 
 
-# 获取二手房数据
-@app.route('/api/house-get/<int:num>', methods=['GET'])
-def house_get(num):
+# 爬虫启动数据准备
+@app.route('/api/get-data', methods=['GET'])
+def get_data():
     # 实时爬取房源
     spider_data = spider_house()
     # print(spider_data)
     # 逐个房源信息插入数据
     for item in spider_data:
-        if House.objects(name=item._name, price=item._price).first():
+        if House.objects(name=item._name, region=item._region,
+                         price=item._price,hostype=item._hostype,
+                         size=item._size,direction=item._direction,
+                         hosplay=item._hosplay,height=item._height,detail=item._detail,).first():
             print('已经爬取过了的房源')
         else:
             house = House(name=item._name, region=item._region,
@@ -108,9 +111,27 @@ def house_get(num):
                           hosplay=item._hosplay, height=item._height, detail=item._detail)
             house.save()
             print('保存房源信息成功')
+            return jsonify({
+                'code': 200
+            })
+
+
+# 获取二手房数据
+@app.route('/api/house-get/<int:num>', methods=['GET'])
+def house_get(num):
+    # 获取房源信息
     houses = House.objects().limit(num)
+    # 获取地区信息
+    regions = House.objects.distinct('region')
+    # 获取朝向信息
+    directions = House.objects.distinct('direction')
+    # 获取户型信息
+    hostypes = House.objects.distinct('hostype')
     return jsonify({
         'houseData': houses,
+        'regionData': regions,
+        'directionData': directions,
+        'hostypeData' : hostypes,
         'code': 200
     })
 
