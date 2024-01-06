@@ -65,7 +65,11 @@
     <el-table-column label="操作" align="center">
       <template #default="scope">
         <i
-          :class="house.likedData.includes(scope.row._id.$oid) ? 'iconfont icon-shoucang iconfont2 iconfont1' : 'iconfont icon-shoucang iconfont2'"
+          :class="
+            house.likedData.includes(scope.row._id.$oid)
+              ? 'iconfont icon-shoucang iconfont2 iconfont1'
+              : 'iconfont icon-shoucang iconfont2'
+          "
           @click="addLike(scope.row)"
         ></i>
         <a :href="scope.row.detail" target="_blank">查看详情</a>
@@ -78,7 +82,13 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import houseStore from "../store/house";
-import { getData,getHouseData,getCollectId,addCollect,searchHouse } from "../untils/request";
+import {
+  getData,
+  getHouseData,
+  getCollectId,
+  addCollect,
+  searchHouse,
+} from "../untils/request";
 import { ElMessage } from "element-plus";
 
 const house = houseStore();
@@ -127,44 +137,59 @@ const renderCollectIcon = () => {
   });
 };
 //定义首次爬取并渲染表格的方法
-const getDatas = () => {
-  getData().then(res=>{
-    if(res.code=200){
-      getTableData();
+const getDatas = async () => {
+  try {
+    let result = await getData();
+    if (result.code == 200) {
+      await getTableData();
     }
-  })
-}
+  } catch (err) {
+    console.log(err);
+  }
+};
 //定义获取表格数据方法
-const getTableData = () => {
-      getHouseData(tableLength.value).then((res) => {
-    // console.log(res)
-    if (res.code == 200) {
-      ElMessage({
-        message: "爬取数据成功",
-        type: "success",
-        grouping: true,
-      });
-      tableData.value = res.houseData;
-      //存储地区数据
-      regionOptions.value = res.regionData;
-      //存储朝向数据
-      directionOptions.value = res.directionData;
-      //存储户型数据
-      hostypeOptions.value = res.hostypeData;
-      //quire数据后关闭loading
-      loading.value = false;
-    } else {
-      ElMessage({
-        message: "爬取数据失败",
-        type: "error",
-      });
-    }
-  });
-    };
+const getTableData = async () => {
+  let res = await getHouseData(tableLength.value);
+  // console.log(res)
+  if (res.code == 200) {
+    ElMessage({
+      message: "爬取数据成功",
+      type: "success",
+      grouping: true,
+    });
+    tableData.value = res.houseData;
+    //存储地区数据
+    regionOptions.value = res.regionData;
+    //存储朝向数据
+    directionOptions.value = res.directionData;
+    //存储户型数据
+    hostypeOptions.value = res.hostypeData;
+    //获取数据后关闭loading
+    loading.value = false;
+  } else {
+    ElMessage({
+      message: "爬取数据失败",
+      type: "error",
+    });
+  }
+};
 //定义表格下拉滚动获取数据的方法
 const loadData = () => {
-  tableLength.value += 2;
-  getTableData();
+  if (
+    houseInfo.direction ||
+    houseInfo.hostype ||
+    houseInfo.region ||
+    houseInfo.name
+  ) {
+    ElMessage({
+      message: "已经展示全部满足搜索条件的房源数据",
+      type: "warning",
+      grouping: true,
+    });
+  } else {
+    tableLength.value += 2;
+    getTableData();
+  }
 };
 // //定义获取地区数据方法
 // const getRegion = () => {
@@ -193,14 +218,13 @@ const searchData = () => {
         type: "success",
       });
       tableData.value = res.houseData;
-}else{
-  ElMessage({
+    } else {
+      ElMessage({
         message: res.message,
         type: "warning",
       });
-}
-}
-  );
+    }
+  });
 };
 
 //按下重置按钮的回调
@@ -217,19 +241,19 @@ const reset = () => {
 //点击收藏的图标的回调
 const addLike = (row) => {
   //传入房源id
-  addCollect(row._id.$oid).then(res =>{
-    if(res.code === 200){
+  addCollect(row._id.$oid).then((res) => {
+    if (res.code === 200) {
       ElMessage({
         message: res.message,
-        type: "success"
-      })
-      renderCollectIcon()
-    }else{
+        type: "success",
+      });
+      renderCollectIcon();
+    } else {
       ElMessage({
         message: res.message,
-        type: "warning"
-      })
-      renderCollectIcon()
+        type: "warning",
+      });
+      renderCollectIcon();
     }
   });
 };
