@@ -7,11 +7,13 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import * as echarts from 'echarts';
+import houseStore from "../store/house";
 
+const house = houseStore();
 let myEchartsTwo = ref()
-let xdata = ['东西湖小区', '汉口小区', '江夏小区', '武昌小区', '洪山小区'];
-let hdata = [2.12, 2.63, 1.82, 3.6, 2.3]
-let ldata = [1.2, 1.3, 1.4, 1.5, 1.6]
+let xdata = house.maxPrice.map(item => item.region)
+let hdata = house.maxPrice.map(item => item.price)
+let ldata = house.minPrice.map(item => item.price)
 
 onMounted(() => {
   let myChart = echarts.init(myEchartsTwo.value);

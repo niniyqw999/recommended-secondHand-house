@@ -7,11 +7,12 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import * as echarts from 'echarts';
+import houseStore from "../store/house";
 
+const house = houseStore()
 let oneChart = ref()
-let xdata = ['东西湖小区', '汉口小区', '江夏小区', '武昌小区', '洪山小区'];
-let ydata = [2.12, 2.63, 1.82, 3.6, 2.3]
-
+let xdata = house.averagePrice.map(item => item.region)
+let ydata = house.averagePrice.map(item => item.price)
 onMounted(() => {
   let myChart = echarts.init(oneChart.value);
   myChart.setOption({

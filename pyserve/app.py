@@ -1,4 +1,4 @@
-import json
+import pandas as pd
 
 from flask import Flask, request, jsonify, make_response
 from flask_mongoengine import MongoEngine
@@ -100,10 +100,10 @@ def get_data():
     # 逐个房源信息插入数据
     for item in spider_data:
         if House.objects(name=item._name, region=item._region,
-                         price=item._price,hostype=item._hostype,
-                         size=item._size,direction=item._direction,
-                         hosplay=item._hosplay,height=item._height,detail=item._detail,).first():
-            print('已经爬取过了的房源')
+                         price=item._price, hostype=item._hostype,
+                         size=item._size, direction=item._direction,
+                         hosplay=item._hosplay, height=item._height, detail=item._detail, ).first():
+            print(f'{item._name}已经爬取过了的房源')
         else:
             house = House(name=item._name, region=item._region,
                           price=item._price, hostype=item._hostype,
@@ -131,7 +131,7 @@ def house_get(num):
         'houseData': houses,
         'regionData': regions,
         'directionData': directions,
-        'hostypeData' : hostypes,
+        'hostypeData': hostypes,
         'code': 200
     })
 
@@ -244,6 +244,37 @@ def house_track():
     spider_data = spider_tracks()
     return jsonify({
         'tracksData': spider_data,
+        'code': 200
+    })
+
+
+# 房源可视化数据获取
+@app.route('/api/house-visual', methods=['GET'])
+def house_visual():
+    # 向数据库获取所有房源信息
+    data = House.objects().as_pymongo()
+    # 获取户型信息
+    hostypes = House.objects.distinct('hostype')
+    # 获取装修信息
+    hosplays = House.objects.distinct('hosplay')
+    # 将数据转换为Pandas的DataFrame
+    df = pd.DataFrame(list(data))
+
+    # 使用Pandas计算每个地区的房价平均值
+    average_prices = df.groupby('region')['price'].mean().reset_index()
+    # 将计算得到的平均价数据保留小数点后两位
+    average_prices['price'] = average_prices['price'].round(2)
+    # 使用Pandas计算每个地区的房价最高值和最低值
+    max_prices = df.groupby('region')['price'].max().reset_index()
+    max_prices['price'] = max_prices['price'].round(2)
+    min_prices = df.groupby('region')['price'].min().reset_index()
+    min_prices['price'] = min_prices['price'].round(2)
+    return jsonify({
+        'average_prices': average_prices.to_dict(orient='records'),
+        'max_prices': max_prices.to_dict(orient='records'),
+        'min_prices': min_prices.to_dict(orient='records'),
+        'hostypeData': hostypes,
+        'hosplayData': hosplays,
         'code': 200
     })
 

@@ -21,7 +21,7 @@ def spider_house():
     for region in region_list:
         print(f'正在采集{region}地区的房源数据')
         for page in range(1, 101):
-            print(f'正在采集第{page}页的房源数据')
+            print(f'正在采集第{region}地区{page}页的房源数据')
             # 请求链接
             url = f'https://wh.lianjia.com/ershoufang/{region}/pg{page}/'
             response = requests.get(url=url, headers=headers)
@@ -54,7 +54,9 @@ def spider_house():
                 # house_data._hosplay = house_info[3]  # 装修
                 # house_data._height = house_info[4]  # 楼层
                 house_data = House(area_info[0], area_info[1], li.css('.totalPrice span::text').get(), house_info[0],
-                                   house_info[1].replace('平米', '') if len(house_info) > 1 else '', house_info[2] if len(house_info) > 2 else '', house_info[3]  if len(house_info) > 3 else '', house_info[4] if len(house_info) > 4 else '',
+                                   house_info[1].replace('平米', '') if len(house_info) > 1 else '',
+                                   house_info[2] if len(house_info) > 2 else '', house_info[3]  if len(house_info) > 3 else '',
+                                   house_info[4] if len(house_info) > 4 else '',
                                    detail)
                 # print(house_data)
                 house_list.append(house_data)

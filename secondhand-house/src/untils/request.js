@@ -82,3 +82,10 @@ export const getHouseTrack = () => {
     }
     );
 }
+//获取房源可视化数据
+export const getHouseVisual = () => {
+    return requests({
+        url: "/house-visual",
+        method: "get"
+    });
+}
