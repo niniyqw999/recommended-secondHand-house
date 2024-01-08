@@ -253,13 +253,14 @@ def house_track():
 def house_visual():
     # 向数据库获取所有房源信息
     data = House.objects().as_pymongo()
-    # 获取户型信息
-    hostypes = House.objects.distinct('hostype')
-    # 获取装修信息
-    hosplays = House.objects.distinct('hosplay')
     # 将数据转换为Pandas的DataFrame
     df = pd.DataFrame(list(data))
-
+    # 统计每个户型的数量
+    hostypes = df['hostype'].value_counts().reset_index()
+    hostypes.columns = ['hostype', 'count']
+    # 统计每个装修类型的数量
+    hosplays = df['hosplay'].value_counts().reset_index()
+    hosplays.columns = ['hosplay', 'count']
     # 使用Pandas计算每个地区的房价平均值
     average_prices = df.groupby('region')['price'].mean().reset_index()
     # 将计算得到的平均价数据保留小数点后两位
@@ -273,8 +274,8 @@ def house_visual():
         'average_prices': average_prices.to_dict(orient='records'),
         'max_prices': max_prices.to_dict(orient='records'),
         'min_prices': min_prices.to_dict(orient='records'),
-        'hostypeData': hostypes,
-        'hosplayData': hosplays,
+        'hostypeData': hostypes.to_dict(orient='records'),
+        'hosplayData': hosplays.to_dict(orient='records'),
         'code': 200
     })
 

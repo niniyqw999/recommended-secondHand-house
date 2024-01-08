@@ -7,58 +7,52 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import * as echarts from "echarts";
+import houseStore from "../store/house";
 
+const house = houseStore();
 let myEcharts = ref();
-let data = [
-  { value: 0.35, name: "精装" },
-  { value: 0.23, name: "简装" },
-  { value: 0.25, name: "毛胚" },
-  { value: 0.17, name: "其他" },
-];
+let data = house.hosplayData;
+data.forEach(obj => {
+  let keys = Object.keys(obj);
+  let newKeys = keys.map(key => {
+    if (key === 'hosplay') {
+      return 'name';
+    } else if (key === 'count') {
+      return 'value';
+    } else {
+      return key;
+    }
+  });
+  let newObj = Object.assign({}, ...newKeys.map((key, index) => ({[key]: obj[keys[index]]})));
+  Object.assign(obj, newObj);
+});
 
 onMounted(() => {
-  let myChart = echarts.init(myEcharts.value);
+  let myChart = echarts.init(myEcharts.value)
   myChart.setOption({
-    tooltip: {
-      trigger: "item",
-    },
     legend: {
-      top: "5%",
-      left: "center",
+      top: 'bottom'
+    },
+    tooltip: {
+      show: true
     },
     title: {
-          text: "二手房源装修分布",
-        },
+    text: '二手房装修类型分布',
+  },
     series: [
       {
-        name: "Access From",
-        type: "pie",
-        radius: ["40%", "70%"],
-        avoidLabelOverlap: false,
-        itemStyle: {
-          borderRadius: 10,
-          borderColor: "#fff",
-          borderWidth: 2,
-        },
-        label: {
-          show: false,
-          position: "center",
-        },
-        emphasis: {
-          label: {
-            show: true,
-            fontSize: 40,
-            fontWeight: "bold",
-          },
-        },
-        labelLine: {
-          show: false,
-        },
+        type: 'pie',
         data: data,
-      },
-    ],
-  });
-});
+        radius: [10, 100],
+        center: ['50%', '45%'],
+        roseType: 'area',
+        itemStyle: {
+          borderRadius: 10
+        }
+      }
+    ]
+  })
+})
 </script>
   
 <style lang="scss" scoped>

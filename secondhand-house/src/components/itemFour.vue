@@ -6,41 +6,70 @@
   
 <script setup>
 import { onMounted, ref } from 'vue';
-import * as echarts from 'echarts';
-let myEcharts = ref()
-let data = [
-  {value:0.15,name:'一室一厅'},
-  {value:0.33,name:'二室一厅'},
-  {value:0.35,name:'三室两厅'},
-  {value:0.17,name:'四室两厅'},
-]
+import * as echarts from "echarts";
+import houseStore from "../store/house";
+
+const house = houseStore();
+let myEcharts = ref();
+let data = house.hostypeData;
+data.forEach(obj => {
+  let keys = Object.keys(obj);
+  let newKeys = keys.map(key => {
+    if (key === 'hostype') {
+      return 'name';
+    } else if (key === 'count') {
+      return 'value';
+    } else {
+      return key;
+    }
+  });
+  let newObj = Object.assign({}, ...newKeys.map((key, index) => ({[key]: obj[keys[index]]})));
+  Object.assign(obj, newObj);
+});
 
 onMounted(() => {
-  let myChart = echarts.init(myEcharts.value)
+  let myChart = echarts.init(myEcharts.value);
   myChart.setOption({
-    legend: {
-      top: 'bottom'
-    },
     tooltip: {
-      show: true
+      trigger: "item",
+    },
+    legend: {
+      top: "5%",
+      left: "center"
     },
     title: {
-    text: '二手房户型分布',
-  },
+          text: "二手房户型分布",
+        },
     series: [
       {
-        type: 'pie',
-        data: data,
-        radius: [10, 100],
-        center: ['50%', '45%'],
-        roseType: 'area',
+        name: "户型",
+        type: "pie",
+        radius: ["10%", "70%"],
+        avoidLabelOverlap: false,
         itemStyle: {
-          borderRadius: 10
-        }
-      }
-    ]
-  })
-})
+          borderRadius: 10,
+          borderColor: "#fff",
+          borderWidth: 2,
+        },
+        label: {
+          show: false,
+          position: "center",
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: 20,
+            fontWeight: "bold",
+          },
+        },
+        labelLine: {
+          show: false,
+        },
+        data: data,
+      },
+    ],
+  });
+});
 </script>
   
 <style lang="scss" scoped>

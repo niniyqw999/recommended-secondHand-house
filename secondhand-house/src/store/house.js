@@ -10,7 +10,7 @@ const houseStore = defineStore('house', {
     maxPrice: [],
     minPrice: [],
     hostypeData: [],
-    hospalyData: [],
+    hosplayData: [],
   }),
   actions: {
 

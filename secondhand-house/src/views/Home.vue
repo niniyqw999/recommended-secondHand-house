@@ -88,6 +88,7 @@ import {
   getCollectId,
   addCollect,
   searchHouse,
+  getHouseVisual
 } from "../untils/request";
 import { ElMessage } from "element-plus";
 
@@ -126,6 +127,17 @@ onMounted(() => {
   getDatas();
   //获取已经收藏过的房源id
   renderCollectIcon();
+  //获取可视化数据
+  getHouseVisual().then(res=>{
+    console.log(res);
+    if(res.code=200){
+      house.averagePrice=res.average_prices
+      house.maxPrice=res.max_prices
+      house.minPrice=res.min_prices
+      house.hostypeData=res.hostypeData
+      house.hosplayData=res.hosplayData
+    }
+  })
 });
 //定义渲染房源收藏图标渲染的方法
 const renderCollectIcon = () => {

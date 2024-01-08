@@ -55,7 +55,8 @@ def spider_house():
                 # house_data._height = house_info[4]  # 楼层
                 house_data = House(area_info[0], area_info[1], li.css('.totalPrice span::text').get(), house_info[0],
                                    house_info[1].replace('平米', '') if len(house_info) > 1 else '',
-                                   house_info[2] if len(house_info) > 2 else '', house_info[3]  if len(house_info) > 3 else '',
+                                   house_info[2] if len(house_info) > 2 else '',
+                                   house_info[3] if len(house_info) > 3 else '',
                                    house_info[4] if len(house_info) > 4 else '',
                                    detail)
                 # print(house_data)

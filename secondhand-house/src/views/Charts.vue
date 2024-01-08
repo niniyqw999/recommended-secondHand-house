@@ -26,23 +26,6 @@ import itemPage from '../components/itemPage.vue';
 import itemThree from '../components/itemThree.vue';
 import itemTwo from '../components/itemTwo.vue';
 import itemFour from '../components/itemFour.vue';
-import { getHouseVisual } from '../untils/request';
-import { onMounted } from 'vue';
-import houseStore from '../store/house';
-
-const house = houseStore();
-
-onMounted(()=>{
-  getHouseVisual().then(res=>{
-    if(res.code=200){
-      house.averagePrice=res.average_prices
-      house.maxPrice=res.max_prices
-      house.minPrice=res.min_prices
-      house.hostypeData=res.hostypeData
-      house.hospalyData=res.hospalyData
-    }
-  })
-})
 </script>
   
 <style lang="scss" scoped>
